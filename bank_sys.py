@@ -190,8 +190,8 @@ class BankSys:
         print("Transaction Table :".center(65) + "\n")
         print(f"{'S.No.':<10}{'Date & Time':<20}{'Creditor':<20}{'Debitor':<20}{'Balance':<10}")
 
-        for i,txn in (acc.passbook, i):
-            print(f"{i:<10}{txn['timestamp']:<20}{txn['Cr'].name:<20}{txn['Dr'].name:<20}{txn['amt']:<10}")
+        for i,txn in enumerate(acc.passbook, 1):
+            print(f"{i:<10}{txn['timestamp']:<20}{txn['cr']:<20}{txn['dr']:<20}{txn['amt']:<10}")
         
         print("\n" + '='*65)
 
