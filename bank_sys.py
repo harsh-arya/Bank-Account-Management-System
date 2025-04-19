@@ -1,9 +1,10 @@
 from bank_acc import BankAcc, InterestRewardAcc, SavingsAcc, BalanceException
+from os import system
 import sys
 
 # Refactoring String for precise comparison
 def refactor(str):
-    return str.strip().title()
+    return str.strip().lower()
 
 # Universal Function which takes Title & Options (Dictionary) menu with title, options as attributes
 def menu(title, options):
@@ -42,6 +43,8 @@ class BankSys:
                     ]
                 )
 
+                system("clear")
+
                 if choice == 1: self.create_new_acc()
                 elif choice == 2: self.deposit_money()
                 elif choice == 3: self.withdraw_money()
@@ -59,6 +62,7 @@ class BankSys:
                 print(f"{type(e).__name__} : {str(e)}")
 
             input("\n\nPlease Enter to continue ...")
+            system("clear")
 
     def create_new_acc(self):
         choice = menu(
@@ -184,10 +188,10 @@ class BankSys:
         
         print("\n" + '='*65)
         print("Transaction Table :".center(65) + "\n")
-        print(f"{'S.No.':<5}{'Date & Time':<10}{'Creditor':<20}{'Debitor':<20}{'Balance':<10}")
+        print(f"{'S.No.':<10}{'Date & Time':<20}{'Creditor':<20}{'Debitor':<20}{'Balance':<10}")
 
         for i,txn in (acc.passbook, i):
-            print(f"{i:<5}{txn['timestamp']:<10}{txn['Cr']:<20}{txn['Dr']:<20}{txn['amt']:<10}")
+            print(f"{i:<10}{txn['timestamp']:<20}{txn['Cr'].name:<20}{txn['Dr'].name:<20}{txn['amt']:<10}")
         
         print("\n" + '='*65)
 
