@@ -110,7 +110,8 @@ class BankAcc:
             if path.exists(cls.data_file):
                 with open(cls.data_file, "rb") as file:
                     cls.all_acc = pickle.load(file)
-                return True
+                if cls.all_acc:
+                    return True
             return False
         except Exception as e:
             print(f"Error Loading Accounts : {type(e).__name__} : {str(e)}")
