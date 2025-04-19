@@ -16,45 +16,9 @@ class BankMenu:
         return int(input("Enter your choice : "))
 
 
-'''
-***** SKIP THIS REDUNDAND CODE ******
-
-# Dictionary for Main Menu
-# Contains Title and Options for menu function
-main_menu={
-    "title":"BANKING SYSTEM MENU",
-    "option":[
-        "Create New Account",
-        "Deposit Money",
-        "Withdraw Money",
-        "Transfer Money",
-        "Check Balance",
-        "View Transaction History",
-        "View All Accounts",
-        "View Transaction Log File",
-        "Exit"
-        ]
-}
-
-# Dictionary for Create New Account Menu
-create_new_acc_menu={
-    "title":"Create New Account",
-    "option":[
-        "Regular Account",
-        "Interest Reward Account",
-        "Savings Account",
-        "To Main Menu",
-        ]
-}
-'''
-
-
 class BankSys:
 
     def __init__(self):
-        self.initialize_sys()
-
-    def initialize_sys(self):
         if BankAcc.load_all_acc():
             print(f"Accounts Loaded ...\n{len(BankAcc.all_acc)} Accounts Detected .")
         else :
@@ -91,11 +55,11 @@ class BankSys:
                 elif choice == 9: 
                     self.exit_msg()
                     break
-
                 else :
                     print("Invalid Choice !")
+            
             except Exception as e:
-                print(f"Error : {str(e)}")
+                print(f"{type(e).__name__} : {str(e)}")
 
             input("\n\nPlease Enter to continue ...")
 
@@ -241,3 +205,4 @@ class BankSys:
         # Save before exiting
         BankAcc.save_all_acc()
         print("Thank you for using the Banking System!")
+        sys.exit()
