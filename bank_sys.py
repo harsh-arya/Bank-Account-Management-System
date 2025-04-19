@@ -38,7 +38,6 @@ class BankSys:
                         "Check Balance",
                         "View Transaction History",
                         "View All Accounts",
-                        "View Transaction Log File",
                         "Exit"
                     ]
                 )
@@ -50,8 +49,7 @@ class BankSys:
                 elif choice == 5: self.check_balance()
                 elif choice == 6: self.view_transac_history()
                 elif choice == 7: self.view_all_acc()
-                elif choice == 8: self.view_transac_log()
-                elif choice == 9: 
+                elif choice == 8: 
                     self.exit_msg()
                     break
                 else :
@@ -213,17 +211,6 @@ class BankSys:
             
             print(f"{acc.name:<20} {acc_type:<20} Rs.{acc.balance:<10}")
         print("="*50 + "\n")
-
-    def view_transac_log(self):
-        try:
-            with open(BankAcc.transaction_log_file, "r") as file:
-                print("\n" + "="*50)
-                print(("Transaction Log").upper().center(50))
-                print("="*50)
-                print(file.read())
-                print("="*50 + "\n")
-        except Exception as e:
-            print(f"Error in Loading File : {str(e)}")
 
     def exit_msg(self):
         # Save before exiting
