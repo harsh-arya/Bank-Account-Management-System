@@ -1,6 +1,19 @@
 from bank_acc import BankAcc, InterestRewardAcc, SavingsAcc, BalanceException
 import sys
 
+# Refactoring String for precise comparison
+def refactor(str):
+    return str.strip().title()
+
+# Universal Function which takes Title & Options (Dictionary) menu with title, options as attributes
+def menu(title, options):
+    print("\n" + "="*50)
+    print(f'{title.upper()}'.center(50))
+    print("="*50)
+    for i, option in enumerate(options, 1):
+        print(f"{i}. {option.title()}")
+    print("="*50 + "\n")
+    return int(input("Enter your choice : "))
 
 class BankSys:
 
@@ -9,29 +22,13 @@ class BankSys:
             print(f"Accounts Loaded ...\n{len(BankAcc.all_acc)} Accounts Detected .")
         else :
             print("No Accounts Detected !\nStarting Fresh System :-")
-
-    # Refactoring String for precise comparison
-    @staticmethod
-    def refactor(str):
-        return str.strip().title()
-    
-    # Universal Function which takes Title & Options (Dictionary) menu with title, options as attributes
-    @staticmethod
-    def display(title, options):
-        print("\n" + "="*50)
-        print(f'{title.upper()}'.center(50))
-        print("="*50)
-        for i, option in enumerate(options, 1):
-            print(f"{i}. {option.title()}")
-        print("="*50 + "\n")
-        return int(input("Enter your choice : "))
     
     def run(self):
 
         while True:
 
             try:
-                choice = display(
+                choice = menu(
                     "BANKING SYSTEM MENU",
                     [
                         "Create New Account",
@@ -66,7 +63,7 @@ class BankSys:
             input("\n\nPlease Enter to continue ...")
 
     def create_new_acc(self):
-        choice = display(
+        choice = menu(
             "Create New Account",
             [
                 "Regular Account",
@@ -81,7 +78,7 @@ class BankSys:
             return
 
         # Taking details and validating them
-        acc_name= input("Enter Account Name : ")
+        acc_name= refactor(input("Enter Account Name : "))
         acc = BankAcc.find_acc(acc_name)
         if acc :
             print("Account already exists !")
@@ -102,7 +99,7 @@ class BankSys:
         print("Deposit Money :".center(50,'*'))
 
         # Taking details and validating them
-        acc_name= input("Enter Account Name : ")
+        acc_name= refactor(input("Enter Account Name : "))
 
         acc = BankAcc.find_acc(acc_name)
         if not acc:
@@ -119,7 +116,7 @@ class BankSys:
         print("Withdrawing Money :".center(50,'*'))
 
         # Taking details and validating them
-        acc_name= input("Enter Account Name : ")
+        acc_name= refactor(input("Enter Account Name : "))
 
         acc = BankAcc.find_acc(acc_name)
         if not acc :
@@ -168,7 +165,7 @@ class BankSys:
         print("Checking Account Balance :".center(50,'*'))
 
         # Taking details and validating them
-        acc_name= input("Enter Account Name : ")
+        acc_name= refactor(input("Enter Account Name : "))
 
         acc = BankAcc.find_acc(acc_name)
         if not acc :
@@ -181,7 +178,7 @@ class BankSys:
         print("\n" + "Checking Transaction History :".center(50,'*') + "\n")
 
         # Taking details and validating them
-        acc_name= input("Enter Account Name : ")
+        acc_name= refactor(input("Enter Account Name : "))
         acc = BankAcc.find_acc(acc_name)
         if not acc :
             print("Account doesn't exist !")
