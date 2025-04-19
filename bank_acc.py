@@ -19,7 +19,7 @@ class BankAcc:
         self.acc_num = self.generate_acc_num()
         # List of dictionary comprising Creditor, Debitor, Amount along with Timestamp
         self.passbook = [
-            {"cr": self.name, "dr": None, "amt": self.balance, 
+            {"cr": self.name, "dr": "-", "amt": self.balance, 
             "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
             }]
 
@@ -40,10 +40,10 @@ class BankAcc:
     def deposit(self, amount):
         self.validate_amount(amount)
         self.balance += amount
-        self.passbook = [
-            {"cr": self.name, "dr": None, "amt": self.balance, 
+        self.passbook.append(
+            {"cr": self.name, "dr": "-", "amt": self.balance, 
             "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-            }]
+            })
 
     def viable_transaction(self, amount):
         if self.balance <= amount:
@@ -59,10 +59,10 @@ class BankAcc:
         self.validate_amount(amount)
         self.viable_transaction(amount)
         self.balance -= amount
-        self.passbook = [
-            {"cr": None, "dr": self.name, "amt": self.balance, 
+        self.passbook.append(
+            {"cr": "-", "dr": self.name, "amt": self.balance, 
             "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-            }]
+            })
 
     def transfer(self, amount, recipient):
         if not isinstance(recipient, BankAcc):
@@ -74,10 +74,10 @@ class BankAcc:
         self.balance -= amount
         recipient.balance += amount
 
-        self.passbook = [
+        self.passbook.append(
             {"cr": self.name, "dr": recipient.name, "amt": self.balance, 
             "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-            }]
+            })
 
     # Find Object( Account ) from Account Name
     @classmethod
@@ -127,10 +127,10 @@ class InterestRewardAcc(BankAcc):
         super().__init__(acc_name, amount)
         self.interest = self.choose_interest()
         self.balance += amount * self.interest
-        self.passbook = [
-            {"cr": "Bank Interest", "dr": None, "amt": self.balance,
+        self.passbook.append(
+            {"cr": "Bank Interest", "dr": "-", "amt": self.balance,
             "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-            }]
+            })
 
     def choose_interest(self):
         while True:
@@ -156,6 +156,13 @@ class SavingsAcc(BankAcc):
             self.viable_transaction(amount + self.fee)
             self.validate_amount(amount + self.fee)
             self.balance -= (amount + self.fee)
+            self.passbook.append(
+            {"cr": "-", "dr": self.name, "amt": self.balance, 
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            },
+            {"cr": "-", "dr": "Bank Fee", "amt": self.balance, 
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            })
 
         except BalanceException as error:
             print(f"\nWithdrawl interrupted . {str(error)}")

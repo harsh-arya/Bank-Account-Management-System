@@ -187,13 +187,13 @@ class BankSys:
             return
         
         print("\n" + '='*65)
-        print("Transaction Table :".center(65) + "\n")
-        print(f"{'S.No.':<10}{'Date & Time':<20}{'Creditor':<20}{'Debitor':<20}{'Balance':<10}")
+        print("Transaction Table :".center(80) + "\n")
+        print(f"{'S.No.':<8}{'Date & Time':<20}{'Creditor':<20}{'Debitor':<20}{'Balance':<10}")
 
         for i,txn in enumerate(acc.passbook, 1):
             print(f"{i:<10}{txn['timestamp']:<20}{txn['cr']:<20}{txn['dr']:<20}{txn['amt']:<10}")
         
-        print("\n" + '='*65)
+        print("\n" + '='*80)
 
     def view_all_acc(self):
         if not BankAcc.all_acc:
