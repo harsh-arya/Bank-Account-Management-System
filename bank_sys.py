@@ -178,15 +178,23 @@ class BankSys:
         print(acc.show_balance())
 
     def view_transac_history(self):
+        print("\n" + "Checking Transaction History :".center(50,'*') + "\n")
+
+        # Taking details and validating them
         acc_name= input("Enter Account Name : ")
         acc = BankAcc.find_acc(acc_name)
         if not acc :
             print("Account doesn't exist !")
             return
-        print("\n" + "Checking Transaction History :".center(50,'*') + "\n")
-        for txn in acc.transaction_history:
-            print(f"-> {txn}")
+        
+        print("\n" + '='*65)
+        print("Transaction Table :".center(65) + "\n")
+        print(f"{'S.No.':<5}{'Date & Time':<10}{'Creditor':<20}{'Debitor':<20}{'Balance':<10}")
 
+        for i,txn in (acc.passbook, i):
+            print(f"{i:<5}{txn['timestamp']:<10}{txn['Cr']:<20}{txn['Dr']:<20}{txn['amt']:<10}")
+        
+        print("\n" + '='*65)
 
     def view_all_acc(self):
         if not BankAcc.all_acc:

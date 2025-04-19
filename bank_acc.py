@@ -17,7 +17,6 @@ class BankAcc:
         self.name = acc_name
         self.balance = amount
         self.acc_num = self.generate_acc_num()
-        self.transaction_history= []
         # List of dictionary comprising Creditor, Debitor, Amount along with Timestamp
         self.passbook = [
             {"cr": self, "db": None, "amt": self.balance, 
