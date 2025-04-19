@@ -105,9 +105,13 @@ class BankAcc:
     def find_acc(cls, acc_name):
         if not acc_name or not isinstance(acc_name, str):
             return None
-        for acc in cls.all_acc:
-            if acc.name.strip().lower() == acc_name.strip().lower():
-                return acc
+        # for acc in cls.all_acc:
+        #     if acc.name.strip().lower() == acc_name.strip().lower():
+        #         return acc
+        
+        # Generator Function
+        if acc_name in ( acc.name for acc in cls.all_acc):
+            return acc
         return None
 
     # Save Transaction History of each object (account) to the given file
