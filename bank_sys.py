@@ -2,7 +2,18 @@ from bank_acc import BankAcc, InterestRewardAcc, SavingsAcc, BalanceException
 import sys
 
 
-class BankMenu:
+class BankSys:
+
+    def __init__(self):
+        if BankAcc.load_all_acc():
+            print(f"Accounts Loaded ...\n{len(BankAcc.all_acc)} Accounts Detected .")
+        else :
+            print("No Accounts Detected !\nStarting Fresh System :-")
+
+    # Refactoring String for precise comparison
+    @staticmethod
+    def refactor(str):
+        return str.strip().title()
     
     # Universal Function which takes Title & Options (Dictionary) menu with title, options as attributes
     @staticmethod
@@ -14,22 +25,13 @@ class BankMenu:
             print(f"{i}. {option.title()}")
         print("="*50 + "\n")
         return int(input("Enter your choice : "))
-
-
-class BankSys:
-
-    def __init__(self):
-        if BankAcc.load_all_acc():
-            print(f"Accounts Loaded ...\n{len(BankAcc.all_acc)} Accounts Detected .")
-        else :
-            print("No Accounts Detected !\nStarting Fresh System :-")
-
+    
     def run(self):
 
         while True:
 
             try:
-                choice = BankMenu().display(
+                choice = display(
                     "BANKING SYSTEM MENU",
                     [
                         "Create New Account",
@@ -64,7 +66,7 @@ class BankSys:
             input("\n\nPlease Enter to continue ...")
 
     def create_new_acc(self):
-        choice = BankMenu().display(
+        choice = display(
             "Create New Account",
             [
                 "Regular Account",
@@ -98,7 +100,10 @@ class BankSys:
 
     def deposit_money(self):
         print("Deposit Money :".center(50,'*'))
+
+        # Taking details and validating them
         acc_name= input("Enter Account Name : ")
+
         acc = BankAcc.find_acc(acc_name)
         if not acc:
             print("Account doesn't exist !")
@@ -107,11 +112,15 @@ class BankSys:
         if amount <= 0:
             print("Invalid \nAmount must be positive value !")
             return
+        
         acc.deposit(amount)
         
     def withdraw_money(self):
         print("Withdrawing Money :".center(50,'*'))
+
+        # Taking details and validating them
         acc_name= input("Enter Account Name : ")
+
         acc = BankAcc.find_acc(acc_name)
         if not acc :
             print("Account doesn't exist !")
@@ -120,12 +129,15 @@ class BankSys:
         if amount <= 0 and amount > acc.balance :
             print("Invalid \nAmount must be positive value !")
             return
+        
         acc.withdraw(amount)
 
     def transfer_money(self):
         print("Transferring Money :".center(50,'*'))
-        sender_name = input("Enter Sender's Account Name : ").strip()
-        recipient_name = input("Enter Receiver's Account Name : ").strip()
+
+        # Taking details and validating them
+        sender_name = refactor(input("Enter Sender's Account Name : "))
+        recipient_name = refactor(input("Enter Receiver's Account Name : "))
         
         sender = BankAcc.find_acc(sender_name)
         if not sender:
@@ -144,7 +156,7 @@ class BankSys:
                 return
             
             sender.transfer(amount, recipient)
-            print(f"Successfully transferred Rs.{amount:.2f} from '{sender.name}' to '{recipient.name}'")
+            print(f"Successfully Transfer : '{sender.name}' : Rs.{amount:.2f} -> '{recipient.name}'")
         except ValueError:
             print("Invalid amount! Please enter a valid number.")
         except BalanceException as e:
@@ -152,14 +164,18 @@ class BankSys:
         except Exception as e:
             print(f"An error occurred during transfer: {str(e)}")
 
-        def check_balance(self):
-            print("Checking Account Balance :".center(50,'*'))
-            acc_name= input("Enter Account Name : ")
-            acc = BankAcc.find_acc(acc_name)
-            if not acc :
-                print("Account doesn't exist !")
-                return
-            acc.show_balance()
+    def check_balance(self):
+        print("Checking Account Balance :".center(50,'*'))
+
+        # Taking details and validating them
+        acc_name= input("Enter Account Name : ")
+
+        acc = BankAcc.find_acc(acc_name)
+        if not acc :
+            print("Account doesn't exist !")
+            return
+        
+        print(acc.show_balance())
 
     def view_transac_history(self):
         acc_name= input("Enter Account Name : ")
@@ -181,12 +197,15 @@ class BankSys:
         print(("All Accounts List").upper().center(50)+ "\n\n")
         print(f"{'Name' :<20} {'Acc-Type' :<20} {'Balance' :<10}")
         print("="*50)
+
+        # Finding Object Type (Account Type)
         for acc in BankAcc.all_acc:
             acc_type = "Regular"
             if isinstance(acc, InterestRewardAcc):
                 acc_type = "Interest Reward"
             if isinstance(acc, SavingsAcc):
                 acc_type = "Savings"
+            
             print(f"{acc.name:<20} {acc_type:<20} Rs.{acc.balance:<10}")
         print("="*50 + "\n")
 
