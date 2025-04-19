@@ -18,9 +18,11 @@ class BankAcc:
         self.balance = amount
         self.acc_num = self.generate_acc_num()
         self.transaction_history= []
+        # List of dictionary comprising Creditor, Debitor, Amount along with Timestamp
         self.passbook = [
-            {"cr": self, "db": None, "amt": self.balance, "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")  }
-            ]
+            {"cr": self, "db": None, "amt": self.balance, 
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            }]
 
         # Adding new object(account) into class list all_acc
         # self.__class__.all_acc.append(self)
@@ -39,6 +41,10 @@ class BankAcc:
     def deposit(self, amount):
         self.validate_amount(amount)
         self.balance += amount
+        self.passbook = [
+            {"cr": self, "db": None, "amt": self.balance, 
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            }]
 
     def viable_transaction(self, amount):
         if self.balance <= amount:
@@ -54,6 +60,10 @@ class BankAcc:
         self.validate_amount(amount)
         self.viable_transaction(amount)
         self.balance -= amount
+        self.passbook = [
+            {"cr": None, "db": self, "amt": self.balance, 
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            }]
 
     def transfer(self, amount, recipient):
         if not isinstance(recipient, BankAcc):
@@ -64,6 +74,11 @@ class BankAcc:
 
         self.balance -= amount
         recipient.balance += amount
+
+        self.passbook = [
+            {"cr": self, "db": recipient, "amt": self.balance, 
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            }]
 
     # Find Object( Account ) from Account Name
     @classmethod
@@ -105,8 +120,12 @@ class BankAcc:
 class InterestRewardAcc(BankAcc):
     def __init__(self, acc_name, amount):
         super().__init__(acc_name, amount)
-        interest = self.choose_interest()
-        self.balance += amount * interest
+        self.interest = self.choose_interest()
+        self.balance += amount * self.interest
+        self.passbook = [
+            {"cr": "Bank Interest", "db": None, "amt": self.balance,
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            }]
 
     def choose_interest(self):
         while True:
