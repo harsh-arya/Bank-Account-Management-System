@@ -92,13 +92,13 @@ class BankAcc:
     @classmethod
     def load_all_acc(cls):
         try:
-            if not path.exists(cls.data_file):
+            if path.exists(cls.data_file):
                 with open(cls.data_file, "rb") as file:
                     cls.all_acc = pickle.load(file)
                 return True
             return False
         except Exception as e:
-            print(f"Error Loading Accounts : {type(e).__name__}")
+            print(f"Error Loading Accounts : {type(e).__name__} : {str(e)}")
             return False
 
 
@@ -111,7 +111,7 @@ class InterestRewardAcc(BankAcc):
     def choose_interest(self):
         while True:
             try:
-                rate = float(input("Choose interst rate(%) : "))*.01
+                rate = float(input("Choose Interst Rate(%) : "))*.01
                 if 0 < rate <= 0.2 :
                     return rate                  
                 else: 
@@ -121,7 +121,7 @@ class InterestRewardAcc(BankAcc):
                 print(f"Type : {type(error).__name__}\n")
                 print(f"Message : {str(error)}")
 
-    
+
 class SavingsAcc(BankAcc):
     def __init__(self, acc_name, amount):
         super().__init__(acc_name, amount)
@@ -134,4 +134,4 @@ class SavingsAcc(BankAcc):
             self.balance -= (amount + self.fee)
 
         except BalanceException as error:
-            msg = f"\nWithdrawl interrupted . {error}"
+            print(f"\nWithdrawl interrupted . {str(error)}")
