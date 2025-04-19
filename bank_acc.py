@@ -18,7 +18,10 @@ class BankAcc:
         self.name = acc_name
         self.balance = amount
         self.acc_num = self.generate_acc_num()
-        self.transaction_history = []
+        self.transaction_history= []
+        self.passbook = [
+            {"cr": self, "db": None, "amt": self.balance, "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")  }
+            ]
 
         # msg = f"Account '{self.name}' created with Balance of Rs.{self.balance:.2f}"
         # self.log(msg)
@@ -35,16 +38,15 @@ class BankAcc:
         return hash(f"({self.name}{datetime.now().timestamp()})") % 1000000
 
     def show_balance(self):
-        msg = f"Account '{self.name}'\nBalance = Rs.{self.balance:.2f}"
-        return msg
+        return (f"Account '{self.name}'\nBalance = Rs.{self.balance:.2f}")
         # self.log("Checked Balance.")
 
     def deposit(self, amount):
         self.validate_amount(amount)
         self.balance += amount
-        msg=f"Deposit of Amount: Rs.{amount} completed."
-        print(msg)
-        self.log(msg)
+        # msg=f"Deposit of Amount: Rs.{amount} completed."
+        # print(msg)
+        # self.log(msg)
 
     def viable_transaction(self, amount):
         if self.balance <= amount:
@@ -60,8 +62,8 @@ class BankAcc:
         self.validate_amount(amount)
         self.viable_transaction(amount)
         self.balance -= amount
-        msg = f"Withdrawl of Amount: Rs.{amount} completed."
-        self.log(msg)
+        # msg = f"Withdrawl of Amount: Rs.{amount} completed."
+        # self.log(msg)
 
     def transfer(self, amount, recipient):
         if not isinstance(recipient, BankAcc):
@@ -73,30 +75,30 @@ class BankAcc:
         self.balance -= amount
         recipient.balance += amount
 
-        sen_msg = f"Transferred Rs.{amount} to Recipient'{recipient.name}'."
-        rec_msg = f"Received  Rs.{amount} from Sender'{self.name}' transferred."
-        self.log(sen_msg)
-        recipient.log(rec_msg)
+        # sen_msg = f"Transferred Rs.{amount} to Recipient'{recipient.name}'."
+        # rec_msg = f"Received  Rs.{amount} from Sender'{self.name}' transferred."
+        # self.log(sen_msg)
+        # recipient.log(rec_msg)
 
-    # Log transaction and account activities in object private list
-    def log(self, message):
-        timestamp = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        log_entry = f"{timestamp} - {message}"
-        self.transaction_history.append(log_entry)
-        print(log_entry)
-        self.log_to_file(log_entry)
+    # # Log transaction and account activities in object private list
+    # def log(self, message):
+    #     timestamp = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    #     log_entry = f"{timestamp} - {message}"
+    #     self.transaction_history.append(log_entry)
+    #     print(log_entry)
+    #     self.log_to_file(log_entry)
 
-    # Log transaction and account activities in transaction log file
-    def log_to_file(self, log_entry):
-        with open(self.transaction_log_file, "a") as f:
-            f.write("-> " + log_entry + "\n")
+    # # Log transaction and account activities in transaction log file
+    # def log_to_file(self, log_entry):
+    #     with open(self.transaction_log_file, "a") as f:
+    #         f.write("-> " + log_entry + "\n")
 
-    # Log transaction and account activities in transaction log file
-    @classmethod
-    def cls_log_to_file(cls, message):
-        timestamp = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        with open(cls.transaction_log_file, "a") as f:
-            f.write(f"{timestamp} - {message}\n")
+    # # Log transaction and account activities in transaction log file
+    # @classmethod
+    # def cls_log_to_file(cls, message):
+    #     timestamp = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    #     with open(cls.transaction_log_file, "a") as f:
+    #         f.write(f"{timestamp} - {message}\n")
 
     # Find Object( Account ) from Account Name
     @classmethod
@@ -115,7 +117,7 @@ class BankAcc:
             # with automatically closes file
             with open(cls.data_file, "wb") as file:
                 pickle.dump(cls.all_acc, file)
-            cls.cls_log_to_file(message= "SYSTEM - All Accounts Saved .")
+            # cls.cls_log_to_file(message= "SYSTEM - All Accounts Saved .")
             return True
         except Exception as e:
             print(f"Error Saving Accounts : {type(e).__name__}")
@@ -128,7 +130,7 @@ class BankAcc:
             if not path.exists(cls.data_file):
                 with open(cls.data_file, "rb") as file:
                     cls.all_acc = pickle.load(file)
-                cls.cls_log_to_file(message= "SYSTEM - All Accounts Loaded .")
+                # cls.cls_log_to_file(message= "SYSTEM - All Accounts Loaded .")
                 return True
             return False
         except Exception as e:
@@ -141,8 +143,8 @@ class InterestRewardAcc(BankAcc):
         super().__init__(acc_name, amount)
         interest = self.choose_interest()
         self.balance += amount * interest
-        msg = (f"Interest Rewarded = {interest}%")
-        self.log(msg)
+        # msg = (f"Interest Rewarded = {interest}%")
+        # self.log(msg)
 
     def choose_interest(self):
         while True:
@@ -162,17 +164,17 @@ class SavingsAcc(BankAcc):
     def __init__(self, acc_name, amount):
         super().__init__(acc_name, amount)
         self.fee=5
-        msg = (f"Fee Structure: Rs.{self.fee} charged per withdrawl")
-        self.log(msg)
+        # msg = (f"Fee Structure: Rs.{self.fee} charged per withdrawl")
+        # self.log(msg)
 
     def withdraw(self, amount):
         try:
             self.viable_transaction(amount + self.fee)
             self.validate_amount(amount + self.fee)
             self.balance -= (amount + self.fee)
-            msg = f"Withdrawl of Amount: Rs.{amount} completed."
-            self.log(msg)
+            # msg = f"Withdrawl of Amount: Rs.{amount} completed."
+            # self.log(msg)
 
         except BalanceException as error:
             msg = f"\nWithdrawl interrupted . {error}"
-            self.log(msg)
+            # self.log(msg)
