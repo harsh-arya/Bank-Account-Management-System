@@ -20,7 +20,8 @@ class BankAcc:
         # List of dictionary comprising Creditor, Debitor, Amount along with Timestamp
         self.passbook = [
             {"cr": self.name, "dr": "-", "amt": self.balance, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "remark": f"Account '{self.name}' created with Balance: Rs. {self.balance}"
             }]
 
         # Adding new object(account) into class list all_acc
@@ -42,7 +43,8 @@ class BankAcc:
         self.balance += amount
         self.passbook.append(
             {"cr": self.name, "dr": "-", "amt": self.balance, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "remark": f"Deposit of Amount: Rs. {amount}"
             })
 
     def viable_transaction(self, amount):
@@ -61,7 +63,8 @@ class BankAcc:
         self.balance -= amount
         self.passbook.append(
             {"cr": "-", "dr": self.name, "amt": self.balance, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "remark": f"Withdrawal of Amount: Rs. {amount}"
             })
 
     def transfer(self, amount, recipient):
@@ -75,8 +78,14 @@ class BankAcc:
         recipient.balance += amount
 
         self.passbook.append(
-            {"cr": self.name, "dr": recipient.name, "amt": self.balance, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            {"cr": "-", "dr": recipient.name, "amt": self.balance, 
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "remark": f"Transferred Rs. {amount} to Account '{recipient.name}'"
+            })
+        recipient.passbook.append(
+            {"cr": self.name, "dr": "-", "amt": recipient.balance, 
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "remark": f"Received Rs. {amount} from Account '{self.name}'"
             })
 
     # Find Object( Account ) from Account Name
@@ -129,7 +138,8 @@ class InterestRewardAcc(BankAcc):
         self.balance += amount * self.interest
         self.passbook.append(
             {"cr": "Bank Interest", "dr": "-", "amt": self.balance,
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "remark": f"Added Bank Interest Reward of Rs. {amount*self.interest}"
             })
 
     def choose_interest(self):
@@ -157,12 +167,10 @@ class SavingsAcc(BankAcc):
             self.validate_amount(amount + self.fee)
             self.balance -= (amount + self.fee)
             self.passbook.append(
-            {"cr": "-", "dr": self.name, "amt": self.balance, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-            },
-            {"cr": "-", "dr": "Bank Fee", "amt": self.balance, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            {"cr": "-", "dr": self.name + ", Bank Fee", "amt": self.balance, 
+            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "remark": f"Withdrawal of Rs. {amount} with Bank Fee: Rs. {self.fee}"
             })
 
         except BalanceException as error:
-            print(f"\nWithdrawl interrupted . {str(error)}")
+            print(f"\nWithdrawal interrupted . {str(error)}")
