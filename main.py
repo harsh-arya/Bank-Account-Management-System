@@ -12,46 +12,6 @@ def initialize_system():
     else :
         print("No Accounts Detected !\nStarting Fresh System :-")
 
-def run():
-
-    while True:
-
-        try:
-            choice = menu(
-                "BANKING SYSTEM MENU",
-                [
-                    "Create New Account",
-                    "Deposit Money",
-                    "Withdraw Money",
-                    "Transfer Money",
-                    "Check Balance",
-                    "View Transaction History",
-                    "View All Accounts",
-                    "Exit"
-                ]
-            )
-
-            system("clear")
-
-            if choice == 1: create_new_acc()
-            elif choice == 2: deposit_money()
-            elif choice == 3: withdraw_money()
-            elif choice == 4: transfer_money()
-            elif choice == 5: check_balance()
-            elif choice == 6: view_transac_history()
-            elif choice == 7: view_all_acc()
-            elif choice == 8: 
-                exit_msg()
-                break
-            else :
-                print("Invalid Choice !")
-        
-        except Exception as e:
-            print(f"{type(e).__name__} : {str(e)}")
-
-        input("\n\nPlease Enter to continue ...")
-        system("clear")
-
 def create_new_acc():
     choice = menu(
         "Create New Account",
@@ -141,7 +101,7 @@ def transfer_money():
             return
         
         sender.transfer(amount, recipient)
-        print(f"Successfully Transfer : '{sender.name}' : Rs.{amount:.2f} -> '{recipient.name}'")
+        print(f"Successful Transfer : '{sender.name}' : Rs.{amount:.2f} -> '{recipient.name}'")
     except ValueError:
         print("Invalid amount! Please enter a valid number.")
     except BalanceException as e:
@@ -174,7 +134,7 @@ def view_transac_history():
     
     print("\n" + '='*130)
     print("Transaction Table :".center(130) + "\n")
-    print(f"{'S.No.':<8}{'Date & Time':<22}{'Creditor':<20}{'Debitor':<20}{'Balance':<10}{'Remark':<30}")
+    print(f"{'S.No.':<8}{'Date & Time':<22}{'Credit':<20}{'Debit':<20}{'Balance':<10}{'Remark':<30}")
 
     for i,txn in enumerate(acc.passbook, 1):
         print(f"{i:<8}{txn['timestamp']:<22}{txn['cr']:<20}{txn['dr']:<20}{txn['amt']:<10}{txn['remark']:<30}")
@@ -209,12 +169,44 @@ def exit_msg():
     sys.exit()
 
 
-if __name__=="__main__":
-    try:
-        initialize_system()
-        run()
-    except:
-        print("\nSystem shutdown requested")
-        sys.exit(0)
 
+initialize_system()
+
+while True:
+
+    try:
+        choice = menu(
+            "BANKING SYSTEM MENU",
+            [
+                "Create New Account",
+                "Deposit Money",
+                "Withdraw Money",
+                "Transfer Money",
+                "Check Balance",
+                "View Transaction History",
+                "View All Accounts",
+                "Exit"
+            ]
+        )
+
+        system("clear")
+
+        if choice == 1: create_new_acc()
+        elif choice == 2: deposit_money()
+        elif choice == 3: withdraw_money()
+        elif choice == 4: transfer_money()
+        elif choice == 5: check_balance()
+        elif choice == 6: view_transac_history()
+        elif choice == 7: view_all_acc()
+        elif choice == 8: 
+            exit_msg()
+            break
+        else :
+            print("Invalid Choice !")
+    
+    except Exception as e:
+        print(f"{type(e).__name__} : {str(e)}")
+
+    input("\n\nPlease Enter to continue ...")
+    system("clear")
 

@@ -78,12 +78,12 @@ class BankAcc:
         recipient.balance += amount
 
         self.passbook.append(
-            {"cr": "-", "dr": f"'{recipient.name}'", "amt": self.balance, 
+            {"cr": f"'{recipient.name}'", "dr": f"'{self.name}'", "amt": amount, 
             "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
             "remark": f"Transferred Rs. {amount:.2f} to Account '{recipient.name}'"
             })
         recipient.passbook.append(
-            {"cr": f"'{self.name}'", "dr": "-", "amt": recipient.balance, 
+            {"cr": f"'{self.name}'", "dr": "-", "amt": amount, 
             "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
             "remark": f"Received Rs. {amount:.2f} from Account '{self.name}'"
             })
