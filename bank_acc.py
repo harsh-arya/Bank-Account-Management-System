@@ -145,11 +145,12 @@ class InterestRewardAcc(BankAcc):
     def choose_interest(self):
         while True:
             try:
-                rate = float(input("Choose Interst Rate(%) : "))*.01
+                rate = float(input("Choose Interst Rate(1-20%) : "))*.01
                 if 0 < rate <= 0.2 :
                     return rate                  
-                else: 
-                    print("Invalid input!")   
+                print("Invalid input! Interest Rate must be within (1-20%).")   
+            except ValueError :
+                print("Invalid input! Please enter Numerical Value.")
             except Exception as error:
                 print(f"Invalid input!\n")
                 print(f"Type : {type(error).__name__}\n")

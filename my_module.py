@@ -14,9 +14,11 @@ def menu(title, options):
     print("="*50 + "\n")
 
     try:
-        choice = int(input(f"Enter your choice(1-{options.len()}) : "))
-        if 1 <= choice <= options.len():
+        choice = int(input(f"Enter your choice(1-{len(options)}) : "))
+        if 1 <= choice <= len(options):
             return choice
-        print(f"Enter numerical value within range (1-{options.len()}).")
+        print(f"Enter numerical value within range (1-{len(options)}).")
+        return False
     except ValueError:
         print("Error! Please enter numerical value.")
+        return False

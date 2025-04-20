@@ -1,6 +1,6 @@
 # BANK ACCOUNT MANAGEMENT SYSTEM
 
-from bank_acc import BankAcc, InterestRewardAcc, SavingsAcc
+from bank_acc import BankAcc, InterestRewardAcc, SavingsAcc, BalanceException
 from my_module import refactor, menu
 from os import path, system
 import sys
@@ -62,14 +62,12 @@ def create_new_acc():
             "To Main Menu",
         ]
     )
-
-    if choice <= 1 and choice >= 3 :
-        print("Invalid Choice !")
+    if not choice:
         return
 
     # Taking details and validating them
-    acc_name= refactor(input("Enter Account Name : "))
-    acc = BankAcc.find_acc(acc_name)
+    acc_name= input("Enter Account Name : ")
+    acc = BankAcc.find_acc(refactor(acc_name))
     if acc :
         print("Account already exists !")
         return
@@ -89,9 +87,9 @@ def deposit_money():
     print("Deposit Money :".center(50,'*'))
 
     # Taking details and validating them
-    acc_name= refactor(input("Enter Account Name : "))
+    acc_name= input("Enter Account Name : ")
 
-    acc = BankAcc.find_acc(acc_name)
+    acc = BankAcc.find_acc(refactor(acc_name))
     if not acc:
         print("Account doesn't exist !")
         return
@@ -106,9 +104,9 @@ def withdraw_money():
     print("Withdrawing Money :".center(50,'*'))
 
     # Taking details and validating them
-    acc_name= refactor(input("Enter Account Name : "))
+    acc_name= input("Enter Account Name : ")
 
-    acc = BankAcc.find_acc(acc_name)
+    acc = BankAcc.find_acc(refactor(acc_name))
     if not acc :
         print("Account doesn't exist !")
         return
@@ -123,15 +121,15 @@ def transfer_money():
     print("Transferring Money :".center(50,'*'))
 
     # Taking details and validating them
-    sender_name = refactor(input("Enter Sender's Account Name : "))
-    recipient_name = refactor(input("Enter Receiver's Account Name : "))
+    sender_name = input("Enter Sender's Account Name : ")
+    recipient_name = input("Enter Receiver's Account Name : ")
     
-    sender = BankAcc.find_acc(sender_name)
+    sender = BankAcc.find_acc(refactor(sender_name))
     if not sender:
         print(f"Sender account '{sender_name}' doesn't exist!")
         return
     
-    recipient = BankAcc.find_acc(recipient_name)
+    recipient = BankAcc.find_acc(refactor(recipient_name))
     if not recipient:
         print(f"Recipient account '{recipient_name}' doesn't exist!")
         return
@@ -155,9 +153,9 @@ def check_balance():
     print("Checking Account Balance :".center(50,'*'))
 
     # Taking details and validating them
-    acc_name= refactor(input("Enter Account Name : "))
+    acc_name= input("Enter Account Name : ")
 
-    acc = BankAcc.find_acc(acc_name)
+    acc = BankAcc.find_acc(refactor(acc_name))
     if not acc :
         print("Account doesn't exist !")
         return
@@ -168,20 +166,20 @@ def view_transac_history():
     print("\n" + "Checking Transaction History :".center(50,'*') + "\n")
 
     # Taking details and validating them
-    acc_name= refactor(input("Enter Account Name : "))
-    acc = BankAcc.find_acc(acc_name)
+    acc_name= input("Enter Account Name : ")
+    acc = BankAcc.find_acc(refactor(acc_name))
     if not acc :
         print("Account doesn't exist !")
         return
     
-    print("\n" + '='*65)
-    print("Transaction Table :".center(110) + "\n")
-    print(f"{'S.No.':<10}{'Date & Time':<20}{'Creditor':<20}{'Debitor':<20}{'Balance':<10}{'Remark':<30}")
+    print("\n" + '='*130)
+    print("Transaction Table :".center(130) + "\n")
+    print(f"{'S.No.':<8}{'Date & Time':<22}{'Creditor':<20}{'Debitor':<20}{'Balance':<10}{'Remark':<30}")
 
     for i,txn in enumerate(acc.passbook, 1):
-        print(f"{i:<10}{txn['timestamp']:<20}{txn['cr']:<20}{txn['dr']:<20}{txn['amt']:<10}{txn['remark']:<30}")
+        print(f"{i:<8}{txn['timestamp']:<22}{txn['cr']:<20}{txn['dr']:<20}{txn['amt']:<10}{txn['remark']:<30}")
     
-    print("\n" + '='*110)
+    print("\n" + '='*130)
 
 def view_all_acc():
     if not BankAcc.all_acc:
