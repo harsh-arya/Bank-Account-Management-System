@@ -2,15 +2,17 @@
 
 from bank_acc import BankAcc, InterestRewardAcc, SavingsAcc, BalanceException
 from my_module import refactor, menu
-from os import path, system
+from os import system
 import sys
+
 
 def initialize_system():
     system("clear")
     if BankAcc.load_all_acc():
         print(f"Accounts Loaded ...\n{len(BankAcc.all_acc)} Accounts Detected .")
-    else :
+    else:
         print("No Accounts Detected !\nStarting Fresh System :-")
+
 
 def create_new_acc():
     choice = menu(
@@ -26,9 +28,9 @@ def create_new_acc():
         return
 
     # Taking details and validating them
-    acc_name= input("Enter Account Name : ")
+    acc_name = input("Enter Account Name : ")
     acc = BankAcc.find_acc(refactor(acc_name))
-    if acc :
+    if acc:
         print("Account already exists !")
         return
     balance = float(input("Enter Balance : "))
@@ -43,11 +45,12 @@ def create_new_acc():
 
     print(f"Account '{acc_name}' created successfully.")
 
+
 def deposit_money():
-    print("Deposit Money :".center(50,'*'))
+    print("Deposit Money :".center(50, '*'))
 
     # Taking details and validating them
-    acc_name= input("Enter Account Name : ")
+    acc_name = input("Enter Account Name : ")
 
     acc = BankAcc.find_acc(refactor(acc_name))
     if not acc:
@@ -60,25 +63,27 @@ def deposit_money():
     
     acc.deposit(amount)
     
+
 def withdraw_money():
-    print("Withdrawing Money :".center(50,'*'))
+    print("Withdrawing Money :".center(50, '*'))
 
     # Taking details and validating them
-    acc_name= input("Enter Account Name : ")
+    acc_name = input("Enter Account Name : ")
 
     acc = BankAcc.find_acc(refactor(acc_name))
-    if not acc :
+    if not acc:
         print("Account doesn't exist !")
         return
     amount = float(input("Enter Amount to withdraw : "))
-    if amount <= 0 and amount > acc.balance :
+    if amount <= 0 and amount > acc.balance:
         print("Invalid \nAmount must be positive value !")
         return
     
     acc.withdraw(amount)
 
+
 def transfer_money():
-    print("Transferring Money :".center(50,'*'))
+    print("Transferring Money :".center(50, '*'))
 
     # Taking details and validating them
     sender_name = input("Enter Sender's Account Name : ")
@@ -109,37 +114,56 @@ def transfer_money():
     except Exception as e:
         print(f"An error occurred during transfer: {str(e)}")
 
+
 def check_balance():
-    print("Checking Account Balance :".center(50,'*'))
+    print("Checking Account Balance :".center(50, '*'))
 
     # Taking details and validating them
-    acc_name= input("Enter Account Name : ")
+    acc_name = input("Enter Account Name : ")
 
     acc = BankAcc.find_acc(refactor(acc_name))
-    if not acc :
+    if not acc:
         print("Account doesn't exist !")
         return
     
     print(acc.show_balance())
 
+
 def view_transac_history():
-    print("\n" + "Checking Transaction History :".center(50,'*') + "\n")
+    print("\n" + "Checking Transaction History :".center(50, '*') + "\n")
 
     # Taking details and validating them
-    acc_name= input("Enter Account Name : ")
+    acc_name = input("Enter Account Name : ")
     acc = BankAcc.find_acc(refactor(acc_name))
-    if not acc :
+    if not acc:
         print("Account doesn't exist !")
         return
     
     print("\n" + '='*130)
     print("Transaction Table :".center(130) + "\n")
-    print(f"{'S.No.':<8}{'Date & Time':<22}{'Credit':<20}{'Debit':<20}{'Balance':<10}{'Remark':<30}")
+    print("\n" + '='*130)
+    print(
+        f"{'S.No.':<8}"
+        f"{'Date & Time':<22}"
+        f"{'Credit':<20}"
+        f"{'Debit':<20}"
+        f"{'Balance':<10}"
+        f"{'Remark':<30}"
+    )
+    print("\n" + '='*130)
 
-    for i,txn in enumerate(acc.passbook, 1):
-        print(f"{i:<8}{txn['timestamp']:<22}{txn['cr']:<20}{txn['dr']:<20}{txn['amt']:<10}{txn['remark']:<30}")
+    for i, txn in enumerate(acc.passbook, 1):
+        print(
+            f"{i:<8}"
+            f"{txn['timestamp'].strftime('%d-%m-%Y %H:%M:%S'):<22}"
+            f"{txn['cr']:<20}"
+            f"{txn['dr']:<20}"
+            f"{txn['amt']:<10}"
+            f"{txn['remark']:<30}"
+        )
     
     print("\n" + '='*130)
+
 
 def view_all_acc():
     if not BankAcc.all_acc:
@@ -147,7 +171,7 @@ def view_all_acc():
         return
 
     print("\n" + "="*50)
-    print(("All Accounts List").upper().center(50)+ "\n\n")
+    print(("All Accounts List").upper().center(50) + "\n\n")
     print(f"{'Name' :<20} {'Acc-Type' :<20} {'Balance' :<10}")
     print("="*50)
 
@@ -162,12 +186,12 @@ def view_all_acc():
         print(f"{acc.name:<20} {acc_type:<20} Rs.{acc.balance:<10}")
     print("="*50 + "\n")
 
+
 def exit_msg():
     # Save before exiting
     BankAcc.save_all_acc()
     print("Thank you for using the Banking System!")
     sys.exit()
-
 
 
 initialize_system()
@@ -201,11 +225,12 @@ while True:
         elif choice == 8: 
             exit_msg()
             break
-        else :
+        else:
             print("Invalid Choice !")
     
     except Exception as e:
         print(f"{type(e).__name__} : {str(e)}")
+        SystemExit(0)
 
     input("\n\nPlease Enter to continue ...")
     system("clear")

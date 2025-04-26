@@ -4,6 +4,7 @@
 def refactor(str):
     return str.strip().lower()
 
+
 # Universal Function which takes Title & Options (Dictionary) menu with title, options as attributes
 def menu(title, options):
     print("\n" + "="*50)

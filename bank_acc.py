@@ -1,3 +1,5 @@
+# Bank Account Core Logic Class
+
 import pickle
 from datetime import datetime
 from os import path
@@ -20,7 +22,7 @@ class BankAcc:
         # List of dictionary comprising Creditor, Debitor, Amount along with Timestamp
         self.passbook = [
             {"cr": f"'{self.name}'", "dr": "-", "amt": self.balance, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "timestamp": datetime.now(),
             "remark": f"Account '{self.name}' created with Balance: Rs. {self.balance:.2f}"
             }]
 
@@ -43,7 +45,7 @@ class BankAcc:
         self.balance += amount
         self.passbook.append(
             {"cr": f"'{self.name}'", "dr": "-", "amt": self.balance, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "timestamp": datetime.now(),
             "remark": f"Deposit of Amount: Rs. {amount:.2f}"
             })
 
@@ -63,7 +65,7 @@ class BankAcc:
         self.balance -= amount
         self.passbook.append(
             {"cr": "-", "dr": f"'{self.name}'", "amt": self.balance, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "timestamp": datetime.now(),
             "remark": f"Withdrawal of Amount: Rs. {amount:.2f}"
             })
 
@@ -74,18 +76,16 @@ class BankAcc:
         self.validate_amount(amount)
         self.viable_transaction(amount)
 
-        self.balance -= amount
-        recipient.balance += amount
+        self.withdraw(amount)
+        recipient.deposit(amount)
 
-        self.passbook.append(
-            {"cr": f"'{recipient.name}'", "dr": f"'{self.name}'", "amt": amount, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-            "remark": f"Transferred Rs. {amount:.2f} to Account '{recipient.name}'"
+        self.passbook[-1].update(
+            {"cr": f"'{recipient.name}'",
+            "remark": f"Transfer to '{recipient.name}': Rs. {amount:.2f}"
             })
-        recipient.passbook.append(
-            {"cr": f"'{self.name}'", "dr": "-", "amt": amount, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-            "remark": f"Received Rs. {amount:.2f} from Account '{self.name}'"
+        recipient.passbook[-1].update(
+            {"dr": f"'{self.name}'",
+            "remark": f"Transfer from '{self.name}': Rs. {amount:.2f}"
             })
 
     # Find Object( Account ) from Account Name
@@ -138,7 +138,7 @@ class InterestRewardAcc(BankAcc):
         self.balance += amount * self.interest
         self.passbook.append(
             {"cr": "Bank Interest", "dr": "-", "amt": self.balance,
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "timestamp": datetime.now(),
             "remark": f"Added Bank Interest Reward of Rs. {amount*self.interest:.2f}"
             })
 
@@ -149,7 +149,7 @@ class InterestRewardAcc(BankAcc):
                 if 0 < rate <= 0.2 :
                     return rate                  
                 print("Invalid input! Interest Rate must be within (1-20%).")   
-            except ValueError :
+            except ValueError:
                 print("Invalid input! Please enter Numerical Value.")
             except Exception as error:
                 print(f"Invalid input!\n")
@@ -160,18 +160,39 @@ class InterestRewardAcc(BankAcc):
 class SavingsAcc(BankAcc):
     def __init__(self, acc_name, amount):
         super().__init__(acc_name, amount)
-        self.fee=5.00
+        self.fee = 5.00
 
     def withdraw(self, amount):
-        try:
-            self.viable_transaction(amount + self.fee)
-            self.validate_amount(amount + self.fee)
-            self.balance -= (amount + self.fee)
-            self.passbook.append(
-            {"cr": "-", "dr": f"'{self.name}', Bank Fee", "amt": self.balance, 
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+        super().withdraw(amount + self.fee)
+        self.passbook[-1].update(
+            {"dr": f"'{self.name}', Bank Fee",
             "remark": f"Withdrawal of Rs. {amount} with Bank Fee: Rs. {self.fee:.2f}"
             })
 
-        except BalanceException as error:
-            print(f"\nWithdrawal interrupted . {str(error)}")
+
+
+
+'''
+
+# Checking Logic & Functionality
+if __name__ == "__main__":
+    try:
+        new = SavingsAcc(acc_name="new", amount=500)
+        new_two = SavingsAcc(acc_name="new_two", amount=500)
+        print(new.show_balance())
+        new.withdraw(100)
+        print(new.show_balance())
+        new.transfer(100, new_two)
+        print(new.show_balance())
+        print(new_two.show_balance())
+        for i, txn in enumerate(new.passbook, 1):
+            print(f"{i:<8}{txn['timestamp'].strftime('%d-%m-%Y %H:%M:%S'):<22}{txn['cr']:<20}{txn['dr']:<20}{txn['amt']:<10}{txn['remark']:<30}")
+            print("\n")
+        for txn in new_two.passbook:
+            print(txn)
+            print("\n")
+    except Exception as error:
+        print(f"System Shutdown!\nError : {str(error)}")
+        SystemExit(0)
+
+'''
