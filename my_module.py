@@ -6,9 +6,10 @@ def refactor(str):
 
 
 # Universal Function which takes Title & Options (Dictionary) menu with title, options as attributes
-def menu(title, options):
+def menu(titles, options):
     print("\n" + "="*50)
-    print(f'{title.upper()}'.center(50))
+    for title in titles:
+        print(f'{title.upper()}'.center(50))
     print("="*50)
     for i, option in enumerate(options, 1):
         print(f"{i}. {option.title()}")

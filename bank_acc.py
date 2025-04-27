@@ -50,7 +50,7 @@ class BankAcc:
             })
 
     def viable_transaction(self, amount):
-        if self.balance <= amount:
+        if self.balance < amount:
             raise BalanceException(
                 f"Sorry, '{self.name}' only has a balance of Rs.{self.balance:.2f}."
             )
