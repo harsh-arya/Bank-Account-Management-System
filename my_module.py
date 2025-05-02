@@ -1,5 +1,6 @@
 # My Function Module
 
+
 # Refactoring String for precise comparison
 def refactor(str):
     return str.strip().lower()
@@ -7,13 +8,13 @@ def refactor(str):
 
 # Universal Function which takes Title & Options (Dictionary) menu with title, options as attributes
 def menu(titles, options):
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     for title in titles:
-        print(f'{title.upper()}'.center(50))
-    print("="*50)
+        print(f"{title.upper()}".center(50))
+    print("=" * 50)
     for i, option in enumerate(options, 1):
         print(f"{i}. {option.title()}")
-    print("="*50 + "\n")
+    print("=" * 50 + "\n")
 
     try:
         choice = int(input(f"Enter your choice(1-{len(options)}) : "))
