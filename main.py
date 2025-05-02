@@ -109,11 +109,9 @@ def withdraw_money():
 
     try:
         current_user.withdraw(amount)
+        print(f"Successful Withdrawal: Rs. {amount:.2f}")
     except Exception as error:
         print(f"Error: {str(error)}")
-        return
-
-    print(f"Successful Withdrawal: Rs. {amount:.2f}")
 
 
 def transfer_money():
@@ -135,7 +133,6 @@ def transfer_money():
 
     except Exception as e:
         print(f"Transfer failed: {str(e)}")
-        return
 
 
 def check_balance():

@@ -46,17 +46,34 @@ class BankAcc:
             self.passbook.append({"cr": self.name, "dr": "-", "amt": amount, "timestamp": datetime.now(), "remark": "Deposit"})
 
     def viable_transaction(self, amount):
+
         if self.balance < amount:
-            raise BalanceException("Insufficient Balance")
+            return False
+
+        return True
 
     def validate_amount(self, amount):
+
         if amount <= 0:
-            raise ValueError("Amount must be positive.")
+            raise False
+
+        return True
 
     # ----Added passbook_entry parameter here, to negate the need to update a already appended entry(that was bad design)----
     def withdraw(self, amount, passbook_entry=None):
+
+        if self.validate_amount(amount) and self.viable_transaction(amount):
+            self.balance -= amount
+            if passbook_entry:
+                self.passbook.append(passbook_entry)
+            else:
+                self.passbook.append({"cr": "-", "dr": self.name, "amt": amount, "timestamp": datetime.now(), "remark": "Withdrawal"})
+        else:
+            raise BalanceException("Insufficient Balance")
+
         self.validate_amount(amount)
         self.viable_transaction(amount)
+
         self.balance -= amount
         if passbook_entry:
             self.passbook.append(passbook_entry)
@@ -157,12 +174,13 @@ class SavingsAcc(BankAcc):
         # super().withdraw(amount + self.fee)
         # self.passbook[-1].update({"dr": f"'{self.name}', Bank Fee", "remark": f"Withdrawal of Rs. {amount} with Bank Fee: Rs. {self.fee:.2f}"})
 
+        fee_amount = amount * SavingsAcc.fee_percentage
+        self.viable_transaction(amount=amount + fee_amount)
+
         if passbook_entry:
             super().withdraw(amount, passbook_entry)
         else:
             super().withdraw(amount)
-
-        fee_amount = amount * SavingsAcc.fee_percentage
 
         super().withdraw(fee_amount, {"cr": "-", "dr": self.name, "amt": fee_amount, "timestamp": datetime.now(), "remark": "Deduction of Bank Fee"})
 
