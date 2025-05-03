@@ -112,11 +112,6 @@ class BankAcc:
         if not acc_name or not isinstance(acc_name, str):
             return None
 
-        # # Generator Function
-        # if acc_name in ( acc.name.strip().title() for acc in cls.all_acc):
-        # # It can't Return acc.
-        #     print("Found .")
-
         for acc in cls.all_acc:
             if acc.name.strip().lower() == acc_name:
                 return acc
@@ -194,51 +189,3 @@ class SavingsAcc(BankAcc):
                 "remark": f"Withdrawal of Rs. {amount:.2f} with Bank Fee: Rs. {self.fee:.2f}",
             }
         super().withdraw(amount + self.fee, passbook_entry)
-
-
-"""
-# Checking Logic & Functionality
-if __name__ == "__main__":
-    try:
-        new = SavingsAcc(acc_name="new", amount=500)
-        new_two = SavingsAcc(acc_name="new_two", amount=500)
-
-        print(new.show_balance())
-        print(new_two.show_balance())
-
-        new.withdraw(500)
-        print(new.show_balance())
-        print(new_two.show_balance())
-
-        # new.transfer(494.99, new_two)
-        # print(new.show_balance())
-        # print(new_two.show_balance())
-
-        # for i, txn in enumerate(new.passbook, 1):
-        #     print(
-        #         f"{i:<8}{txn['timestamp'].strftime('%d-%m-%Y %H:%M:%S'):<22}{txn['cr']:<20}{txn['dr']:<20}{txn['amt']:<10}{txn['remark']:<30}"
-        #     )
-        #     print("\n")
-        # for txn in new_two.passbook:
-        #     print(txn)
-        #     print("\n")
-
-        # list = [{"arg1": "name1", "arg2": 1}]
-        # print(list)
-        # list = [{"arg1": "name1_m"}]
-        # print(list)
-        # list.append({"arg1": "name2", "arg2": 2})
-        # print(list)
-        # list = [{"arg1": "name2_m", "arg2": 2}]
-        # print(list)
-        # for i, entry in enumerate(list, 1):
-        #     print(f"{i}) {entry}")
-
-    except Exception as error:
-        print(f"System Shutdown!\nError : {str(error)}")
-        SystemExit(0)
-
-    finally:
-        print(new.show_balance())
-        print(new_two.show_balance())
-"""
