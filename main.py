@@ -73,7 +73,9 @@ def main_menu():
             break
 
         try:
-            choice = menu(["Main Menu"], ["Log-In", "Sign-In", "Exit"])
+            choice = menu(
+                ["Main Menu"], ["Existing User: Log-In", "New User: Sign-Up", "Exit"]
+            )
 
             if choice == 1:
                 login()
