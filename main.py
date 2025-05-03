@@ -5,34 +5,45 @@ from my_module import refactor, menu
 from os import system
 import sys
 
-
-global current_user
 current_user = None
 
 
-def login():
+def login(acc=None):
     global current_user
 
-    while True:
+    if acc:
+        current_user = acc
+        print(f"Account '{current_user.name}': Log in successful !")
+        return
+
+    max_attempts = 3
+    total_attempts = 0
+
+    while total_attempts < max_attempts:
         try:
             acc_name = input("Enter Account Name : ")
             acc = BankAcc.find_acc(refactor(acc_name))
             if acc:
                 current_user = acc
-                break
+                print(f"Account '{current_user.name}': Log in successful !")
+                return
+            else:
+                raise ValueError(f"Account '{acc_name}' doesn't exist !")
+
         except Exception as error:
             print(f"Login Error: {str(error)}")
+            total_attempts += 1
+            print(f"Remaining Attempts: {max_attempts-total_attempts}")
 
 
 def confirm_login(acc):
     global current_user
 
     choice = input(refactor(f"Do you want to login with '{acc.name}'(y/n): "))
-    if choice == 'y':
-        current_user = acc
-        print("Log in successful !")
+    if choice == "y":
+        login(acc)
         return
-    elif choice == 'n':
+    elif choice == "n":
         print("Login-Initiation Terminated!")
     else:
         print("Invalid choice!")
@@ -40,7 +51,7 @@ def confirm_login(acc):
 
 def logout():
     global current_user
-    
+
     if current_user:
         print(f"Account '{current_user.name}' logged out ...")
     else:
@@ -51,11 +62,11 @@ def logout():
 # To Validate Account for:-
 #   True:   Check whether acc exists before acc-creation
 #   False:  Check whether acc doesn't exist for transactions
-def validate_acc(acc_name, validity=False):
+def validate_acc(acc_name, acc_exists=False):
     acc = BankAcc.find_acc(refactor(acc_name))
 
-    # For True Validity, validate for Account-Creation
-    if validity:
+    # For True acc_exists, validate for Account-Creation
+    if acc_exists:
         if acc:
             print(f"Account '{acc_name}' already exists!")
         return None
@@ -75,7 +86,7 @@ def validate_balance(amount, limit=None):
             if amount > limit:
                 print("Invalid amount!\nAmount cannot exceed {limit:.2f} !")
                 return
-        
+
     except ValueError:
         print("Invalid amount! Please enter a valid number.")
     except BalanceException as e:
@@ -90,6 +101,28 @@ def initialize_system():
         print("No Accounts Detected !\nStarting Fresh System :-")
 
 
+def main_menu():
+    while True:
+        if current_user:
+            break
+
+        try:
+            choice = menu(["Main Menu"], ["Log-In", "Sign-In", "Exit"])
+
+            if choice == 1:
+                login()
+            elif choice == 2:
+                create_new_acc()
+            elif choice == 3:
+                exit_msg()
+            else:
+                print("Invalid Choice !")
+
+        except Exception as e:
+            print(f"{type(e).__name__} : {str(e)}")
+            SystemExit(0)
+
+
 def create_new_acc():
     choice = menu(
         [
@@ -100,7 +133,7 @@ def create_new_acc():
             "Interest Reward Account",
             "Savings Account",
             "To Main Menu",
-        ]
+        ],
     )
     if not choice:
         return
@@ -108,16 +141,19 @@ def create_new_acc():
     try:
         # Taking details and validating them
         acc_name = input("Enter Account Name : ")
-        acc = validate_acc(acc_name, True)
+        acc = validate_acc(acc_name, acc_exists=True)
         balance = float(input("Enter Balance : "))
         validate_balance(balance)
     except Exception as error:
         print(f"Error: {str(error)}")
 
     # Creating Account(class object)
-    if choice == 1: acc = BankAcc(acc_name, balance)
-    elif choice == 2: acc = InterestRewardAcc(acc_name, balance)
-    elif choice == 3: acc = SavingsAcc(acc_name, balance)
+    if choice == 1:
+        acc = BankAcc(acc_name, balance)
+    elif choice == 2:
+        acc = InterestRewardAcc(acc_name, balance)
+    elif choice == 3:
+        acc = SavingsAcc(acc_name, balance)
 
     print(f"Account '{acc_name}' created successfully.")
 
@@ -125,103 +161,69 @@ def create_new_acc():
 
 
 def deposit_money():
-    print("Deposit Money :".center(50, '*'))
+    print("Deposit Money :".center(50, "*"))
 
     # Taking details and validating them
-    if not current_user:
-        acc_name = input("Enter Account Name : ")
-        acc = validate_acc(acc_name)
-        confirm_login(acc)
-
-    else:
-        acc = current_user
-
     amount = float(input("Enter Amount : "))
     validate_balance(amount)
-    
-    acc.deposit(amount)
+
+    current_user.deposit(amount)
     print(f"Successful Deposit: Rs. {amount:.2f}")
-    
+
 
 def withdraw_money():
-    print("Withdrawing Money :".center(50, '*'))
+    print("Withdrawing Money :".center(50, "*"))
 
     # Taking details and validating them
-    if not current_user:
-        acc_name = input("Enter Account Name : ")
-
-        acc = validate_acc(acc_name)
-        confirm_login(acc)
-
-    else:
-        acc = current_user
-        
     amount = float(input("Enter Amount to withdraw : "))
-    validate_balance(amount, acc.balance)
-    
-    acc.withdraw(amount)
+    validate_balance(amount, current_user.balance)
+
+    current_user.withdraw(amount)
     print(f"Successful Withdrawal: Rs. {amount:.2f}")
 
 
 def transfer_money():
-    print("Transferring Money :".center(50, '*'))
+    print("Transferring Money :".center(50, "*"))
 
     # Taking details and validating them
-    if not current_user:
-        sender_name = input("Enter Sender's Account Name : ")
-        sender = validate_acc(sender_name)
-        confirm_login(sender)
-    
-    else:
-        sender = current_user
-        
+    sender = current_user
+
     recipient_name = input("Enter Receiver's Account Name : ")
-    
-    recipient = BankAcc.find_acc(refactor(recipient_name))
-    if not recipient:
-        print(f"Recipient account '{recipient_name}' doesn't exist!")
+
+    # recipient = BankAcc.find_acc(refactor(recipient_name))
+    # if not recipient:
+    #     print(f"Recipient account '{recipient_name}' doesn't exist!")
+    #     return
+    recipient = validate_acc(recipient_name)
+    if recipient is None:
         return
-    
+
     try:
         amount = float(input("Enter Transfer Amount : "))
         validate_balance(amount)
 
         sender.transfer(amount, recipient)
-        print(f"Successful Transfer : '{sender.name}' : Rs.{amount:.2f} -> '{recipient.name}'")
+        print(
+            f"Successful Transfer : '{sender.name}' : Rs.{amount:.2f} -> '{recipient.name}'"
+        )
 
     except Exception as e:
         print(f"Transfer failed: {str(e)}")
 
 
 def check_balance():
-    print("Checking Account Balance :".center(50, '*'))
+    print("Checking Account Balance :".center(50, "*"))
 
     # Taking details and validating them
-    if not current_user:
-        acc_name = input("Enter Account Name : ")
-        acc = validate_acc(acc_name)
-        confirm_login(acc)
-        
-    else:
-        acc = current_user
-    print(acc.show_balance())
+    print(current_user.show_balance())
 
 
 def view_transac_history():
-    print("\n" + "Checking Transaction History :".center(50, '*') + "\n")
+    print("\n" + "Checking Transaction History :".center(50, "*") + "\n")
+    print("\n" + "=" * 130)
 
-    # Taking details and validating them
-    if not current_user:
-        acc_name = input("Enter Account Name : ")
-        acc = validate_acc(acc_name)
-        confirm_login(acc)
-
-    else:
-        acc = current_user
-        
-    print("\n" + '='*130)
     print("Transaction Table :".center(130) + "\n")
-    print("\n" + '='*130)
+    print("\n" + "=" * 130)
     print(
         f"{'S.No.':<8}"
         f"{'Date & Time':<22}"
@@ -230,9 +232,9 @@ def view_transac_history():
         f"{'Balance':<10}"
         f"{'Remark':<30}"
     )
-    print("\n" + '='*130)
+    print("\n" + "=" * 130)
 
-    for i, txn in enumerate(acc.passbook, 1):
+    for i, txn in enumerate(current_user.passbook, 1):
         print(
             f"{i:<8}"
             f"{txn['timestamp'].strftime('%d-%m-%Y %H:%M:%S'):<22}"
@@ -241,8 +243,8 @@ def view_transac_history():
             f"{txn['amt']:<10}"
             f"{txn['remark']:<30}"
         )
-    
-    print("\n" + '='*130)
+
+    print("\n" + "=" * 130)
 
 
 def view_all_acc():
@@ -251,11 +253,11 @@ def view_all_acc():
         return
     print(f"{len(BankAcc.all_acc)} Accounts are detected.")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(("All Accounts List").upper().center(70) + "\n")
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"{'S.no.':<8}{'Name' :<25}{'Acc-Type' :<22}{'Balance' :<15}")
-    print("="*70)
+    print("=" * 70)
 
     # Finding Object Type (Account Type)
     for i, acc in enumerate(BankAcc.all_acc, 1):
@@ -264,9 +266,9 @@ def view_all_acc():
             acc_type = "Interest Reward"
         if isinstance(acc, SavingsAcc):
             acc_type = "Savings"
-        
+
         print(f"{i:<8}{acc.name:<25} {acc_type:<22} Rs.{acc.balance:<15}")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
 
 def exit_msg():
@@ -276,20 +278,18 @@ def exit_msg():
     sys.exit()
 
 
+# -----------EXECUTION STARTS HERE--------
+
 initialize_system()
+main_menu()
 
 while True:
-    
-    current_user_status = "Guest Login"
-    if current_user:
-        current_user_status = f"Logged In:'{current_user.name}'"
-    
+
+    current_user_status = f"Logged In:'{current_user.name}'"
+
     try:
         choice = menu(
-            [
-                "BANKING SYSTEM MENU",
-                f"{current_user_status}"
-            ],
+            ["BANKING SYSTEM MENU", f"{current_user_status}"],
             [
                 "Create New Account",
                 "Deposit Money",
@@ -299,30 +299,43 @@ while True:
                 "View Transaction History",
                 "View All Accounts",
                 "Logout",
-                "Exit"
-            ]
+                "Exit",
+            ],
         )
 
         system("clear")
 
-        if choice == 1: create_new_acc()
-        elif choice == 2: deposit_money()
-        elif choice == 3: withdraw_money()
-        elif choice == 4: transfer_money()
-        elif choice == 5: check_balance()
-        elif choice == 6: view_transac_history()
-        elif choice == 7: view_all_acc()
-        elif choice == 8: logout()
-        elif choice == 9: 
+        if choice == 1:
+            create_new_acc()
+        elif choice == 2:
+            deposit_money()
+        elif choice == 3:
+            withdraw_money()
+        elif choice == 4:
+            transfer_money()
+        elif choice == 5:
+            check_balance()
+        elif choice == 6:
+            view_transac_history()
+        elif choice == 7:
+            view_all_acc()
+        elif choice == 8:
+            logout()
+            input("\n\nPlease Enter to continue ...")
+            system("clear")
+            main_menu()
+        elif choice == 9:
             exit_msg()
             break
         else:
             print("Invalid Choice !")
-    
+
     except Exception as e:
         print(f"{type(e).__name__} : {str(e)}")
         SystemExit(0)
 
+    finally:
+        BankAcc.save_all_acc()
+
     input("\n\nPlease Enter to continue ...")
     system("clear")
-
