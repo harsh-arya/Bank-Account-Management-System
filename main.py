@@ -59,24 +59,6 @@ def logout():
     current_user = None
 
 
-# To Validate Account for:-
-#   True:   Check whether acc exists before acc-creation
-#   False:  Check whether acc doesn't exist for transactions
-def validate_acc(acc_name, acc_exists=False):
-    acc = BankAcc.find_acc(refactor(acc_name))
-
-    # For True acc_exists, validate for Account-Creation
-    if acc_exists:
-        if acc:
-            print(f"Account '{acc_name}' already exists!")
-        return None
-
-    if not acc:
-        print(f"Account '{acc_name}' doesn't exist!")
-        return None
-    return acc
-
-
 def validate_balance(amount, limit=None):
     try:
         if amount <= 0:
@@ -141,7 +123,9 @@ def create_new_acc():
     try:
         # Taking details and validating them
         acc_name = input("Enter Account Name : ")
-        acc = validate_acc(acc_name, acc_exists=True)
+        acc = BankAcc.find_acc(acc_name)
+        if acc:
+            raise Exception("Account already exists!")
         balance = float(input("Enter Balance : "))
         validate_balance(balance)
     except Exception as error:
@@ -187,15 +171,11 @@ def transfer_money():
 
     # Taking details and validating them
     sender = current_user
-
     recipient_name = input("Enter Receiver's Account Name : ")
 
-    # recipient = BankAcc.find_acc(refactor(recipient_name))
-    # if not recipient:
-    #     print(f"Recipient account '{recipient_name}' doesn't exist!")
-    #     return
-    recipient = validate_acc(recipient_name)
-    if recipient is None:
+    recipient = BankAcc.find_acc(refactor(recipient_name))
+    if not recipient:
+        print(f"Recipient account '{recipient_name}' doesn't exist!")
         return
 
     try:
