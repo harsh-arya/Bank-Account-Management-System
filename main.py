@@ -1,6 +1,6 @@
 # BANK ACCOUNT MANAGEMENT SYSTEM
 
-from bank_acc import BankAcc, InterestRewardAcc, SavingsAcc, BalanceException
+from bank_acc import BankAcc, InterestRewardAcc, SavingsAcc
 from my_module import refactor, menu
 from os import system
 import sys
@@ -59,22 +59,6 @@ def logout():
     current_user = None
 
 
-def validate_balance(amount, limit=None):
-    try:
-        if amount <= 0:
-            print("Invalid amount! Amount must be positive.")
-            return
-        if limit is not None:
-            if amount > limit:
-                print("Invalid amount!\nAmount cannot exceed {limit:.2f} !")
-                return
-
-    except ValueError:
-        print("Invalid amount! Please enter a valid number.")
-    except BalanceException as e:
-        print(f"Transfer failed: {str(e)}")
-
-
 def initialize_system():
     system("clear")
     if BankAcc.load_all_acc():
@@ -127,7 +111,6 @@ def create_new_acc():
         if acc:
             raise Exception("Account already exists!")
         balance = float(input("Enter Balance : "))
-        validate_balance(balance)
     except Exception as error:
         print(f"Error: {str(error)}")
 
@@ -147,23 +130,25 @@ def create_new_acc():
 def deposit_money():
     print("Deposit Money :".center(50, "*"))
 
-    # Taking details and validating them
-    amount = float(input("Enter Amount : "))
-    validate_balance(amount)
-
-    current_user.deposit(amount)
-    print(f"Successful Deposit: Rs. {amount:.2f}")
+    try:
+        # Taking details and validating them
+        amount = float(input("Enter Amount : "))
+        current_user.deposit(amount)
+        print(f"Successful Deposit: Rs. {amount:.2f}")
+    except Exception as error:
+        print(f"{type(error).__name__}: {str(error)}")
 
 
 def withdraw_money():
     print("Withdrawing Money :".center(50, "*"))
 
-    # Taking details and validating them
-    amount = float(input("Enter Amount to withdraw : "))
-    validate_balance(amount, current_user.balance)
-
-    current_user.withdraw(amount)
-    print(f"Successful Withdrawal: Rs. {amount:.2f}")
+    try:
+        # Taking details and validating them
+        amount = float(input("Enter Amount to withdraw : "))
+        current_user.withdraw(amount)
+        print(f"Successful Withdrawal: Rs. {amount:.2f}")
+    except Exception as error:
+        print(f"{type(error).__name__}: {str(error)}")
 
 
 def transfer_money():
@@ -180,8 +165,6 @@ def transfer_money():
 
     try:
         amount = float(input("Enter Transfer Amount : "))
-        validate_balance(amount)
-
         sender.transfer(amount, recipient)
         print(
             f"Successful Transfer : '{sender.name}' : Rs.{amount:.2f} -> '{recipient.name}'"

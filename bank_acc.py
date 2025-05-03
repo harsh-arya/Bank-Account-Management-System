@@ -14,6 +14,8 @@ class BankAcc:
     # List of BankAcc objects
     all_acc = []
     data_file = "acc_info.dat"
+    # Maximum limit for Balance: 10 Crore/ 100 Million
+    MAX_BALANCE = float(100000000)
 
     def __init__(self, acc_name, amount):
         self.name = acc_name
@@ -70,6 +72,12 @@ class BankAcc:
     def validate_amount(self, amount):
         if amount <= 0:
             raise ValueError("Amount must be positive.")
+        limit = BankAcc.MAX_BALANCE - self.balance
+        if amount > limit:
+            raise BalanceException(
+                f"Invalid amount!\nAmount cannot exceed {limit:.2f} !\nMaximum Account-Limit: {BankAcc.MAX_BALANCE}"
+            )
+            return
 
     def withdraw(self, amount, passbook_entry=None):
         # Validating amount and transaction
