@@ -79,7 +79,7 @@ class BankAcc:
             )
             return
 
-    def withdraw(self, amount, passbook_entry=None, fee_entry=None):
+    def withdraw(self, amount, passbook_entry=None):
         # Validating amount and transaction
         self.validate_amount(amount)
         self.viable_transaction(amount)
@@ -98,8 +98,6 @@ class BankAcc:
                     "remark": f"Withdrawal of Amount: Rs. {amount:.2f}",
                 }
             )
-        if fee_entry:
-            self.passbook.append(fee_entry)
 
     def transfer(self, amount, recipient):
         if not isinstance(recipient, BankAcc):
@@ -192,14 +190,8 @@ class SavingsAcc(BankAcc):
 
     def withdraw(self, amount, passbook_entry=None):
         self.fee_amount = amount * SavingsAcc.fee_rate
-        if passbook_entry is None:
-            passbook_entry = {
-                "cr": "-",
-                "dr": f"'{self.name}'",
-                "amt": amount,
-                "timestamp": datetime.now(),
-                "remark": f"Withdrawal of Rs. {amount:.2f}",
-            }
+        self.viable_transaction(amount=amount + self.fee_amount)
+
         fee_entry = {
             "cr": "-",
             "dr": "Bank Fee",
@@ -207,4 +199,5 @@ class SavingsAcc(BankAcc):
             "timestamp": datetime.now(),
             "remark": f"Bank Fee Deducted: Rs. {self.fee_amount:.2f}",
         }
-        super().withdraw(amount + self.fee_amount, passbook_entry, fee_entry)
+        super().withdraw(amount, passbook_entry)
+        super().withdraw(self.fee_amount, fee_entry)
