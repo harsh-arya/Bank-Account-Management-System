@@ -189,15 +189,15 @@ class SavingsAcc(BankAcc):
         super().__init__(acc_name, amount)
 
     def withdraw(self, amount, passbook_entry=None):
-        self.fee_amount = amount * SavingsAcc.fee_rate
-        self.viable_transaction(amount=amount + self.fee_amount)
+        fee_amount = amount * SavingsAcc.fee_rate
+        self.viable_transaction(amount=amount + fee_amount)
 
         fee_entry = {
             "cr": "-",
             "dr": "Bank Fee",
-            "amt": self.fee_amount,
+            "amt": fee_amount,
             "timestamp": datetime.now(),
-            "remark": f"Bank Fee Deducted: Rs. {self.fee_amount:.2f}",
+            "remark": f"Bank Fee Deducted: Rs. {fee_amount:.2f}",
         }
         super().withdraw(amount, passbook_entry)
-        super().withdraw(self.fee_amount, fee_entry)
+        super().withdraw(fee_amount, fee_entry)
