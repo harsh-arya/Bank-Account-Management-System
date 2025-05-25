@@ -170,7 +170,7 @@ class InterestRewardAcc(BankAcc):
     def choose_interest(self):
         while True:
             try:
-                rate = float(input("Choose Interst Rate(1-20%) : ")) * 0.01
+                rate = float(input("Choose Interest Rate(1-20%) : ")) * 0.01
                 if 0 < rate <= 0.2:
                     return rate
                 print("Invalid input! Interest Rate must be within (1-20%).")
